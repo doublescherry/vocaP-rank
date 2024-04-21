@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube Channel Ranking</title>
+</head>
+<body>
+  <h1>YouTube Channel Ranking</h1>
+  <div id="ranking"></div>
+
+  <script>
+    // ここにJavaScriptコードを貼り付ける
+
+    // APIキー
+    const API_KEY = 'AIzaSyDMInz0zVI_FuweiSmU92i2YeiIc_u7GzY';
+
+    // チャンネルIDのリスト
+    const channelIds = ['UCRZWzEm_YtlgPxaT4_28NIg', 'UCroy52JFxta2RNMgVqk87NQ'];
+
+    // チャンネルごとの登録者数を格納するオブジェクト
+    const subscriberCounts = {};
+
+    // YouTube Data APIを使用してチャンネルの登録者数を取得する関数
+    async function getSubscriberCount(channelId) {
+      const url = `https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${channelId}&key=${API_KEY}`;
+      const response = await fetch(url);
+      const data = await response.json();
+      return parseInt(data.items[0].statistics.subscriberCount);
+    }
+
+    // チャンネルごとの登録者数を取得し、オブジェクトに格納する関数
+    async function fetchSubscriberCounts() {
+      for (let channelId of channelIds) {
+        const count = await getSubscriberCount(channelId);
+        subscriberCounts[channelId] = count;
+      }
+    }
+
+    // ランキングを表示する関数
+    function displayRanking() {
+      // 登録者数の降順でソート
+      const sortedChannels = Object.keys(subscriberCounts).sort((a, b) => subscriberCounts[b] - subscriberCounts[a]);
+
+      // ランキングを表示
+      const rankingDiv = document.getElementById('ranking');
+      rankingDiv.innerHTML = '<h2>チャンネルランキング:</h2>';
+      sortedChannels.forEach((channelId, index) => {
+        const channelDiv = document.createElement('div');
+        channelDiv.textContent = `${index + 1}. Channel ${channelId}: ${subscriberCounts[channelId]} subscribers`;
+        rankingDiv.appendChild(channelDiv);
+      });
+    }
+
+    // メイン処理
+    async function main() {
+      await fetchSubscriberCounts();
+      displayRanking();
+    }
+
+    // メイン処理の実行
+    main();
+  </script>
+</body>
+</html>
