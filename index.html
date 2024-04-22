@@ -41,6 +41,14 @@ async function readChannelData() {
 // チャンネルごとの登録者数を取得し、オブジェクトに格納する関数
 async function fetchSubscriberCounts() {
   try {
+    // getSubscriberCount 関数を fetchSubscriberCounts 関数内で定義
+    async function getSubscriberCount(channelId) {
+      const url = `https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${channelId}&key=${API_KEY}`;
+      const response = await fetch(url);
+      const data = await response.json();
+      return parseInt(data.items[0].statistics.subscriberCount);
+    }
+
     for (let channelId in channelData) {
       const count = await getSubscriberCount(channelId);
       subscriberCounts[channelId] = count;
