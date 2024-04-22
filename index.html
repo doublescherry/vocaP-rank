@@ -64,6 +64,15 @@ function displaySubscriberCounts() {
   });
 }
 
+// チャンネル登録者数で降順にソートする関数
+function sortSubscriberCounts() {
+  // ソートしたチャンネルIDの配列を取得
+  const sortedChannelIds = Object.keys(subscriberCounts).sort((a, b) => {
+    return subscriberCounts[b] - subscriberCounts[a];
+  });
+  return sortedChannelIds;
+}
+
 // メイン処理
 async function main() {
   await readChannelData(); // チャンネルIDと名前の読み込み
