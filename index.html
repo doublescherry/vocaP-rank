@@ -76,7 +76,7 @@ async function readChannelData() {
   // 行ごとに処理
   text.trim().split('\n').forEach(line => {
     const [channelId, channelName] = line.split(':');
-    channelData[channelId] = channelName;
+    channelData[channelId] = channelName.trim(); // 余分なスペースを取り除く
   });
 }
 
