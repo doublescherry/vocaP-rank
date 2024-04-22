@@ -15,11 +15,8 @@
     // APIキー
     const API_KEY = 'AIzaSyDMInz0zVI_FuweiSmU92i2YeiIc_u7GzY';
 
-// チャンネルIDと名前のマッピング
-const channelNames = {
-  'UCRZWzEm_YtlgPxaT4_28NIg': 'Channel Name 1',
-  'UCroy52JFxta2RNMgVqk87NQ': 'Channel Name 2'
-};
+// チャンネルIDと名前のマッピングを格納するオブジェクト
+const channelData = {};
 
 // チャンネルごとの登録者数を格納するオブジェクト
 const subscriberCounts = {};
@@ -34,7 +31,7 @@ async function getSubscriberCount(channelId) {
 
 // チャンネルごとの登録者数を取得し、オブジェクトに格納する関数
 async function fetchSubscriberCounts() {
-  for (let channelId in channelNames) {
+  for (let channelId in channelData) {
     const count = await getSubscriberCount(channelId);
     subscriberCounts[channelId] = count;
   }
@@ -57,7 +54,7 @@ function displaySubscriberCounts() {
   // ソートされたチャンネルIDごとに表示
   sortedChannelIds.forEach(channelId => {
     const p = document.createElement('p');
-    const channelName = channelNames[channelId];
+    const channelName = channelData[channelId];
     p.textContent = `${channelName}: ${subscriberCounts[channelId]} subscribers`;
     subscriberCountsElement.appendChild(p);
   });
@@ -65,8 +62,22 @@ function displaySubscriberCounts() {
 
 // メイン処理
 async function main() {
-  await fetchSubscriberCounts();
-  displaySubscriberCounts();
+  await readChannelData(); // チャンネルIDと名前の読み込み
+  await fetchSubscriberCounts(); // 登録者数の取得
+  displaySubscriberCounts(); // ランキングの表示
+}
+
+// チャンネルIDと名前をファイルから読み込む関数
+async function readChannelData() {
+  // ファイルを読み込む
+  const response = await fetch('channels.txt');
+  const text = await response.text();
+  
+  // 行ごとに処理
+  text.trim().split('\n').forEach(line => {
+    const [channelId, channelName] = line.split(':');
+    channelData[channelId] = channelName;
+  });
 }
 
 // メイン処理の実行
