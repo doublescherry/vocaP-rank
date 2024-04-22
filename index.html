@@ -21,29 +21,33 @@ const channelData = {};
 // チャンネルごとの登録者数を格納するオブジェクト
 const subscriberCounts = {};
 
-// YouTube Data APIを使用してチャンネルの登録者数を取得する関数
-async function getSubscriberCount(channelId) {
-  const url = `https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${channelId}&key=${API_KEY}`;
-  const response = await fetch(url);
-  const data = await response.json();
-  return parseInt(data.items[0].statistics.subscriberCount);
+// チャンネルIDと名前をファイルから読み込む関数
+async function readChannelData() {
+  try {
+    // ファイルを読み込む
+    const response = await fetch('channel_data.txt');
+    const text = await response.text();
+    
+    // 行ごとに処理
+    text.trim().split('\n').forEach(line => {
+      const [channelId, channelName] = line.split(':');
+      channelData[channelId.trim()] = channelName.trim(); // 余分なスペースを取り除く
+    });
+  } catch (error) {
+    console.error('Error reading channel data:', error);
+  }
 }
 
 // チャンネルごとの登録者数を取得し、オブジェクトに格納する関数
 async function fetchSubscriberCounts() {
-  for (let channelId in channelData) {
-    const count = await getSubscriberCount(channelId);
-    subscriberCounts[channelId] = count;
+  try {
+    for (let channelId in channelData) {
+      const count = await getSubscriberCount(channelId);
+      subscriberCounts[channelId] = count;
+    }
+  } catch (error) {
+    console.error('Error fetching subscriber counts:', error);
   }
-}
-
-// チャンネル登録者数で降順にソートする関数
-function sortSubscriberCounts() {
-  // ソートしたチャンネルIDの配列を取得
-  const sortedChannelIds = Object.keys(subscriberCounts).sort((a, b) => {
-    return subscriberCounts[b] - subscriberCounts[a];
-  });
-  return sortedChannelIds;
 }
 
 // ランキングを表示する関数
@@ -65,19 +69,6 @@ async function main() {
   await readChannelData(); // チャンネルIDと名前の読み込み
   await fetchSubscriberCounts(); // 登録者数の取得
   displaySubscriberCounts(); // ランキングの表示
-}
-
-// チャンネルIDと名前をファイルから読み込む関数
-async function readChannelData() {
-  // ファイルを読み込む
-  const response = await fetch('channels.txt');
-  const text = await response.text();
-  
-  // 行ごとに処理
-  text.trim().split('\n').forEach(line => {
-    const [channelId, channelName] = line.split(':');
-    channelData[channelId] = channelName.trim(); // 余分なスペースを取り除く
-  });
 }
 
 // メイン処理の実行
