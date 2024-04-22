@@ -15,72 +15,81 @@
     // APIキー
     const API_KEY = 'AIzaSyDMInz0zVI_FuweiSmU92i2YeiIc_u7GzY';
 
-// チャンネルIDと名前のマッピングを格納するオブジェクト
-const channelData = {};
+    // チャンネルIDと名前のマッピングを格納するオブジェクト
+    const channelData = {};
 
-// チャンネルごとの登録者数を格納するオブジェクト
-const subscriberCounts = {};
+    // チャンネルごとの登録者数を格納するオブジェクト
+    const subscriberCounts = {};
 
-// チャンネルIDと名前をファイルから読み込む関数
-async function readChannelData() {
-  try {
-    // ファイルを読み込む
-    const response = await fetch('channel_data.txt');
-    const text = await response.text();
-    
-    // 行ごとに処理
-    text.trim().split('\n').forEach(line => {
-      const [channelId, channelName] = line.split(':');
-      channelData[channelId.trim()] = channelName.trim(); // 余分なスペースを取り除く
-    });
-  } catch (error) {
-    console.error('Error reading channel data:', error);
-  }
-}
-
-// チャンネルの登録者数を取得する関数
-async function getSubscriberCount(channelId) {
-  const url = `https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${channelId}&key=${API_KEY}`;
-  const response = await fetch(url);
-  const data = await response.json();
-  return parseInt(data.items[0].statistics.subscriberCount);
-}
-
-// チャンネルごとの登録者数を取得し、オブジェクトに格納する関数
-async function fetchSubscriberCounts() {
-  try {
-    await readChannelData(); // チャンネルIDと名前の読み込み
-    for (let channelId in channelData) {
-      const count = await getSubscriberCount(channelId);
-      subscriberCounts[channelId] = count;
+    // チャンネルIDと名前をファイルから読み込む関数
+    async function readChannelData() {
+      try {
+        // ファイルを読み込む
+        const response = await fetch('channel_data.txt');
+        const text = await response.text();
+        
+        // 行ごとに処理
+        text.trim().split('\n').forEach(line => {
+          const [channelId, channelName] = line.split(':');
+          channelData[channelId.trim()] = channelName.trim(); // 余分なスペースを取り除く
+        });
+      } catch (error) {
+        console.error('Error reading channel data:', error);
+      }
     }
-    displaySubscriberCounts(); // ランキングの表示
-  } catch (error) {
-    console.error('Error fetching subscriber counts:', error);
-  }
-}
 
-// ランキングを表示する関数
-function displaySubscriberCounts() {
-  const subscriberCountsElement = document.getElementById('subscriberCounts');
-  // チャンネル登録者数でソート
-  const sortedChannelIds = sortSubscriberCounts();
-  // ソートされたチャンネルIDごとに表示
-  sortedChannelIds.forEach(channelId => {
-    const p = document.createElement('p');
-    const channelName = channelData[channelId];
-    p.textContent = `${channelName}: ${subscriberCounts[channelId]} subscribers`;
-    subscriberCountsElement.appendChild(p);
-  });
-}
+    // チャンネルの登録者数を取得する関数
+    async function getSubscriberCount(channelId) {
+      const url = `https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${channelId}&key=${API_KEY}`;
+      const response = await fetch(url);
+      const data = await response.json();
+      return parseInt(data.items[0].statistics.subscriberCount);
+    }
 
-// メイン処理
-async function main() {
-  await fetchSubscriberCounts(); // チャンネルごとの登録者数の取得と表示
-}
+    // チャンネルごとの登録者数を取得し、オブジェクトに格納する関数
+    async function fetchSubscriberCounts() {
+      try {
+        await readChannelData(); // チャンネルIDと名前の読み込み
+        for (let channelId in channelData) {
+          const count = await getSubscriberCount(channelId);
+          subscriberCounts[channelId] = count;
+        }
+        displaySubscriberCounts(); // ランキングの表示
+      } catch (error) {
+        console.error('Error fetching subscriber counts:', error);
+      }
+    }
 
-// メイン処理の実行
-main();
+    // チャンネル登録者数で降順にソートする関数
+    function sortSubscriberCounts() {
+      // ソートしたチャンネルIDの配列を取得
+      const sortedChannelIds = Object.keys(subscriberCounts).sort((a, b) => {
+        return subscriberCounts[b] - subscriberCounts[a];
+      });
+      return sortedChannelIds;
+    }
+
+    // ランキングを表示する関数
+    function displaySubscriberCounts() {
+      const subscriberCountsElement = document.getElementById('subscriberCounts');
+      // チャンネル登録者数でソート
+      const sortedChannelIds = sortSubscriberCounts();
+      // ソートされたチャンネルIDごとに表示
+      sortedChannelIds.forEach(channelId => {
+        const p = document.createElement('p');
+        const channelName = channelData[channelId];
+        p.textContent = `${channelName}: ${subscriberCounts[channelId]} subscribers`;
+        subscriberCountsElement.appendChild(p);
+      });
+    }
+
+    // メイン処理
+    async function main() {
+      await fetchSubscriberCounts(); // チャンネルごとの登録者数の取得と表示
+    }
+
+    // メイン処理の実行
+    main();
   </script>
 </body>
 </html>
