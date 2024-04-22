@@ -38,21 +38,23 @@ async function readChannelData() {
   }
 }
 
+// チャンネルの登録者数を取得する関数
+async function getSubscriberCount(channelId) {
+  const url = `https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${channelId}&key=${API_KEY}`;
+  const response = await fetch(url);
+  const data = await response.json();
+  return parseInt(data.items[0].statistics.subscriberCount);
+}
+
 // チャンネルごとの登録者数を取得し、オブジェクトに格納する関数
 async function fetchSubscriberCounts() {
   try {
-    // getSubscriberCount 関数を fetchSubscriberCounts 関数内で定義
-    async function getSubscriberCount(channelId) {
-      const url = `https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${channelId}&key=${API_KEY}`;
-      const response = await fetch(url);
-      const data = await response.json();
-      return parseInt(data.items[0].statistics.subscriberCount);
-    }
-
+    await readChannelData(); // チャンネルIDと名前の読み込み
     for (let channelId in channelData) {
       const count = await getSubscriberCount(channelId);
       subscriberCounts[channelId] = count;
     }
+    displaySubscriberCounts(); // ランキングの表示
   } catch (error) {
     console.error('Error fetching subscriber counts:', error);
   }
@@ -72,20 +74,9 @@ function displaySubscriberCounts() {
   });
 }
 
-// チャンネル登録者数で降順にソートする関数
-function sortSubscriberCounts() {
-  // ソートしたチャンネルIDの配列を取得
-  const sortedChannelIds = Object.keys(subscriberCounts).sort((a, b) => {
-    return subscriberCounts[b] - subscriberCounts[a];
-  });
-  return sortedChannelIds;
-}
-
 // メイン処理
 async function main() {
-  await readChannelData(); // チャンネルIDと名前の読み込み
-  await fetchSubscriberCounts(); // 登録者数の取得
-  displaySubscriberCounts(); // ランキングの表示
+  await fetchSubscriberCounts(); // チャンネルごとの登録者数の取得と表示
 }
 
 // メイン処理の実行
