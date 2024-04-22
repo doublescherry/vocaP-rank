@@ -61,7 +61,7 @@
       // ソートされたチャンネルIDごとに表示
       sortedChannelIds.forEach(channelId => {
         const p = document.createElement('p');
-        const channelName = channelData[channelId];
+        const channelName = channelData[channelId]; // チャンネルIDからチャンネル名を取得
         p.textContent = `${channelName}: ${subscriberCounts[channelId]} subscribers`;
         subscriberCountsElement.appendChild(p);
       });
