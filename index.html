@@ -25,14 +25,8 @@
     async function readChannelData() {
       try {
         // ファイルを読み込む
-        const response = await fetch('channel_data.txt');
-        const text = await response.text();
-        
-        // 行ごとに処理
-        text.trim().split('\n').forEach(line => {
-          const [channelId, channelName] = line.split(':');
-          channelData[channelId.trim()] = channelName.trim(); // 余分なスペースを取り除く
-        });
+        const response = await fetch('channel_data.json');
+        channelData = await response.json();
       } catch (error) {
         console.error('Error reading channel data:', error);
       }
