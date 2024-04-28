@@ -57,7 +57,7 @@
       const subscriberCountsElement = document.getElementById('subscriberCounts');
       const channelName = channelData[channelId]; // チャンネルIDからチャンネル名を取得
       const li = document.createElement('li');
-      p.textContent = `${channelName}: ${subscriberCount} subscribers`;
+      li.textContent = `${channelName}: ${subscriberCount} subscribers`;
 
       // チャンネル登録者数でソートして挿入
       let inserted = false;
@@ -65,7 +65,7 @@
       for (let i = 0; i < items.length; i++) {
         const currentCount = parseInt(items[i].textContent.split(':')[1]);
         if (subscriberCount > currentCount) {
-          subscriberCountsElement.insertBefore(p, items[i]);
+          subscriberCountsElement.insertBefore(li, items[i]);
           inserted = true;
           break;
         }
