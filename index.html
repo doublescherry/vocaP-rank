@@ -61,7 +61,7 @@
 
       // チャンネル登録者数でソートして挿入
       let inserted = false;
-      const items = subscriberCountsElement.getElementsByTagName('p');
+      const items = subscriberCountsElement.getElementsByTagName('li');
       for (let i = 0; i < items.length; i++) {
         const currentCount = parseInt(items[i].textContent.split(':')[1]);
         if (subscriberCount > currentCount) {
