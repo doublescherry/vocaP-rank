@@ -56,7 +56,7 @@
     function displaySubscriberCount(channelId, subscriberCount) {
       const subscriberCountsElement = document.getElementById('subscriberCounts');
       const channelName = channelData[channelId]; // チャンネルIDからチャンネル名を取得
-      const p = document.createElement('p');
+      const li = document.createElement('li');
       p.textContent = `${channelName}: ${subscriberCount} subscribers`;
 
       // チャンネル登録者数でソートして挿入
