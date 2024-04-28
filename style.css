@@ -1,7 +1,7 @@
 /* style.css */
 
 /* リストアイテムのスタイル */
-#subscriberCounts li {
+li {
   margin-bottom: 10px;
   padding: 10px;
   background-color: #f5f5f5;
@@ -10,7 +10,7 @@
 }
 
 /* リストアイテム内のテキストのスタイル */
-#subscriberCounts li p {
+li p {
   margin: 0;
   font-size: 16px;
   color: #333;
