@@ -18,29 +18,25 @@
     // チャンネルIDと名前のマッピングを格納する変数
     let channelData = {};
 
-    // チャンネルごとの登録者数を格納するオブジェクト
-    const subscriberCounts = {};
-
-    // チャンネルIDと名前をファイルから読み込む関数
-    async function readChannelData() {
+    // メイン処理
+    async function main() {
       try {
-        // ファイルを読み込む
+        document.getElementById('loadingMessage').style.display = 'block'; // 読み込み中メッセージを表示する
+
+        // ファイルからチャンネルIDと名前の読み込み
         const response = await fetch('channel_data.json');
         channelData = await response.json();
-      } catch (error) {
-        console.error('Error reading channel data:', error);
-      }
-    }
 
-    // チャンネルごとの登録者数を取得し、オブジェクトに格納する関数
-    async function fetchSubscriberCounts() {
-      try {
+        // 各チャンネルの登録者数を取得して表示
         for (let channelId in channelData) {
-          const count = await getSubscriberCount(channelId);
-          subscriberCounts[channelId] = count;
+          const subscriberCount = await getSubscriberCount(channelId);
+          displaySubscriberCount(channelId, subscriberCount);
         }
+
+        // 全ての処理が終了したら読み込み中メッセージを非表示にする
+        document.getElementById('loadingMessage').style.display = 'none';
       } catch (error) {
-        console.error('Error fetching subscriber counts:', error);
+        console.error('Error:', error);
       }
     }
 
@@ -52,30 +48,13 @@
       return parseInt(data.items[0].statistics.subscriberCount);
     }
 
-    // ランキングを表示する関数
-    function displaySubscriberCounts() {
-      const loadingMessage = document.getElementById('loadingMessage');
-      loadingMessage.style.display = 'none'; // 読み込み中メッセージを非表示にする
+    // 登録者数を表示する関数
+    function displaySubscriberCount(channelId, subscriberCount) {
       const subscriberCountsElement = document.getElementById('subscriberCounts');
-      // チャンネル登録者数でソート
-      const sortedChannelIds = Object.keys(subscriberCounts).sort((a, b) => {
-        return subscriberCounts[b] - subscriberCounts[a];
-      });
-      // ソートされたチャンネルIDごとに表示
-      sortedChannelIds.forEach(channelId => {
-        const p = document.createElement('p');
-        const channelName = channelData[channelId]; // チャンネルIDからチャンネル名を取得
-        p.textContent = `${channelName}: ${subscriberCounts[channelId]} subscribers`;
-        subscriberCountsElement.appendChild(p);
-      });
-    }
-
-    // メイン処理
-    async function main() {
-      document.getElementById('loadingMessage').style.display = 'block'; // 読み込み中メッセージを表示する
-      await readChannelData(); // チャンネルIDと名前の読み込み
-      await fetchSubscriberCounts(); // 登録者数の取得
-      displaySubscriberCounts(); // ランキングの表示
+      const channelName = channelData[channelId]; // チャンネルIDからチャンネル名を取得
+      const p = document.createElement('p');
+      p.textContent = `${channelName}: ${subscriberCount} subscribers`;
+      subscriberCountsElement.appendChild(p);
     }
 
     // メイン処理の実行
