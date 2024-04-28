@@ -14,11 +14,12 @@ li p {
   margin: 0;
   font-size: 16px;
   color: #333;
+  text-align: left; /* 左揃えにする */
 }
 
 /* 数値部分のスタイル */
 li .subscriberCount {
+  display: block; /* テキストを新しい行に配置 */
+  margin-top: 5px; /* 数値とチャンネル名の間に少しのマージンを追加 */
   text-align: center; /* 中央揃え */
-  display: inline-block; /* テキストを左揃えに */
-  min-width: 50px; /* 最小の幅を設定 */
 }
