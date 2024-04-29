@@ -1,25 +1,28 @@
+<!-- HTML -->
 <!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YouTube Channel Subscriber Counts</title>
+  <title>登録者10万人超えボカロP チャンネル登録者数ランキング</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>YouTube Channel Subscriber Counts</h1>
+  <h1>登録者10万人超えボカロP チャンネル登録者数ランキング</h1>
   <div id="loadingMessage">読込中...</div> <!-- 読み込み中のメッセージを表示する要素 -->
   <ol id="subscriberCounts"></ol> <!-- リスト表示のための <ol> 要素 -->
 
-
   <script>
     // APIキー
-    const API_KEY = 'YOUR_API_KEY';
+    const API_KEY = 'AIzaSyBGRZVcwJD7UgefK_2vh4d5hvecCzFs3eQ';
 
     // チャンネルIDと名前のマッピングを格納する変数
     let channelData = {};
 
-    // メイン処理の実行
+    // チャンネルごとの登録者数を格納するオブジェクト
+    const subscriberCounts = {};
+
+    // メイン処理
     async function main() {
       try {
         document.getElementById('loadingMessage').style.display = 'block'; // 読み込み中メッセージを表示する
@@ -52,23 +55,24 @@
     // 登録者数を表示する関数
     function displaySubscriberCount(channelId, subscriberCount) {
       const subscriberCountsElement = document.getElementById('subscriberCounts');
-      const channelInfo = channelData[channelId];
-      const { name, backgroundColor } = channelInfo;
-      
+      const channelName = channelData[channelId]; // チャンネルIDからチャンネル名を取得
       const li = document.createElement('li');
-      li.style.backgroundColor = backgroundColor; // 背景色を設定
+      li.textContent = `${channelName}: ${subscriberCount} subscribers`;
 
-      const p = document.createElement('p');
-      p.textContent = `${name}: ${subscriberCount} subscribers`;
-
-      // 数値部分のスタイルを設定
-      const span = document.createElement('span');
-      span.textContent = subscriberCount;
-      span.classList.add('subscriberCount');
-
-      p.appendChild(span);
-      li.appendChild(p);
-      subscriberCountsElement.appendChild(li);
+      // チャンネル登録者数でソートして挿入
+      let inserted = false;
+      const items = subscriberCountsElement.getElementsByTagName('li');
+      for (let i = 0; i < items.length; i++) {
+        const currentCount = parseInt(items[i].textContent.split(':')[1]);
+        if (subscriberCount > currentCount) {
+          subscriberCountsElement.insertBefore(li, items[i]);
+          inserted = true;
+          break;
+        }
+      }
+      if (!inserted) {
+        subscriberCountsElement.appendChild(li);
+      }
     }
 
     // メイン処理の実行
